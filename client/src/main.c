@@ -192,14 +192,17 @@ static void process_error(const Pkg* pkg, int sock) {
 static void process_context(Context* ctx, int sock) {
 
     size_t i;
+    size_t count;
     Pkg pkg;
 
     assert(ctx);
 
+    count = 0;
     for(;;) {
         for(i = 0; i < ctx->win.i; i++) {
-            if(pkgrecv(&pkg, sock, TIMEOUT)) {
-                if(!ctx->skip && ispkg(&pkg)) {
+            if(pkgrecv(&pkg, sock, TIMEOUT) && ispkg(&pkg)) {
+                count++;   
+                if(!ctx->skip) {
                     debug("received package %zu.\n", (size_t)pkg.data.indx);
                     context_update(ctx, &pkg);
                     if(CtxCompleted(ctx)) {
@@ -212,16 +215,21 @@ static void process_context(Context* ctx, int sock) {
                             ctx->ack = 0;
                         } 
                     }
-                }
+                } 
+            }
+
+            if(count == ctx->win.i) {
+                debug("sending response.\n");
+                pkgsend(&ctx->win.buf, sock);
+                ctx->skip = 0;
+                count = 0;
             }
         }
-        debug("sending response.\n");
-        pkgsend(&ctx->win.buf, sock);
-        ctx->skip = 0;
     }
 
 _end:
-    debug("context completed: %zu bytes received.\n", ctx->recv);
+    debug("context completed: %zu packages received.\n", ctx->k);
+
 }
 
 int main(int argc, char** argv) {

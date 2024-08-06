@@ -184,6 +184,7 @@ static int context_update_with_data(Context* ctx, Pkg* pkg) {
         if(pkg->data.indx == ctx->indx) {
             pkg_rmv_sentinel_bytes(pkg);
             ctx->recv += pkg->data.size;
+            ctx->k++;
             fwrite(pkg->data.content, pkg->data.size, 1, ctx->desc.fp);
             init_pkg_with_ack(&ctx->win.buf);
             incindx(ctx);
@@ -192,6 +193,8 @@ static int context_update_with_data(Context* ctx, Pkg* pkg) {
     }
 
     if(nack) {
+        debug("waiting package %zu.\n", ctx->indx);
+        debug("sending nack %zu.\n", ctx->indx);
         init_pkg_with_nack(&ctx->win.buf, ctx->indx);
         ctx->skip = 1;
     }

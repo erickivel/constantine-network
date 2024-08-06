@@ -28,6 +28,7 @@ struct Context {
 
     size_t indx;
     size_t recv;
+    size_t k;
 
     struct  {
 
