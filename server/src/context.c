@@ -274,6 +274,7 @@ static int fill_context_buf_from_index(Context* ctx, size_t i) {
     for(; i < WINSZ && ret > 0; i++) {
 
         ret = pkgread(&ctx->win.buf[i], ctx->desc.fp);
+        ctx->k++;
         if(ret) {
 
             ctx->sent += ctx->win.buf[i].data.size;
@@ -491,6 +492,7 @@ static int context_update_with_nack(Context* ctx, const Pkg* pkg) {
     assert(pkg);
 
     if(CtxDownload(ctx)) {
+        debug("received nack %zu.\n", (size_t)pkg->data.indx);
         if(CtxEnd(ctx)) {
             found = find_nack_pkg(ctx, PkgIndx(pkg), NULL);
             if(!found) {

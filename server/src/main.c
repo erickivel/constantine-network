@@ -36,7 +36,7 @@ static void usage(const char* exec) {
  *  @ctx : Pointer to the 'Context' structure containing the window buffer.
  *  @sock: Socket file descriptor to send the packages over.
  */
-static inline void sendwin(const Context* ctx, int sock) {
+static inline void sendwin(Context* ctx, int sock) {
 
     size_t i;
 
@@ -125,7 +125,7 @@ static void process_context(Context* ctx, int sock) {
         }
     }
 
-    debug("context completed: %zu bytes sent.\n", ctx->sent);
+    debug("context completed: %zu packages sent.\n", ctx->k);
 }
 
 int main(int argc, char** argv) {

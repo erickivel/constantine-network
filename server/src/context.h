@@ -24,6 +24,7 @@ struct Context {
     size_t completed;
     size_t indx;
     size_t sent;
+    size_t k;
 
     struct  {
 
